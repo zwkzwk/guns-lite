@@ -7,6 +7,8 @@ guns-lite项目本身有readme文件，如果你有使用spring boot的和beetl�
 
 但是考虑到有的开发者可能初次使用上述组件，有的甚至刚接触java不久，那么本文当将引导你一步步使用本系统搭建一个后台管理系统，并做二次开发。
 
+## 演示
+- http://guns-lite.enilu.cn/
 
 ## 版本说明
 
@@ -58,13 +60,15 @@ guns-lite包含了成熟的后台管理功能guns-admin，以及前后端分离�
 ## 使用
 
 - 克隆本项目
-- 导入idea或者eclipse
-- 创建数据库：guns-lite，将guns-admin/sql/guns-lite.sql导入数据库中，更改相应数据库配置
+- 导入idea或者eclipse，确保开发工具安装了lombok插件，如果不了解该插件，请自行google
+- 创建数据库：guns-lite，更改相应数据库配置
+- guns-dmin启动的时候回自动创建表并导入src/main/resources/import.sql到数据库中，所以无需开发人员自己初始化表结构
 - 启动guns-admin
 - 访问 https://localhost:8080，   登录，用户名密码:admin/admin ![demo](../demo.gif)
 ## 文档
 
-[http://www.enilu.cn/guns-lite/](http://www.enilu.cn/guns-lite/)
+- [http://enilu.github.io/guns-lite](http://enilu.github.io/guns-lite)
+- [http://enilu.gitee.io/guns-lite](http://enilu.gitee.io/guns-lite)
 
 ## 感谢
 
@@ -77,3 +81,5 @@ guns-lite包含了成熟的后台管理功能guns-admin，以及前后端分离�
 
 
 也欢迎你在github给该项目点个赞：[https://github.com/enilu/guns-lite](https://github.com/enilu/guns-lite)
+
+另提供了他的前后端分离版（vuejs)：[http://enilu.gitee.io/web-flash](http://enilu.gitee.io/web-flash)

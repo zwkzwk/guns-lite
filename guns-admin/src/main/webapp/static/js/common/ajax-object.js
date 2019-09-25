@@ -29,7 +29,12 @@
 					
 				},
 		        success: function(data) {
-		        	me.success(data);
+		        	console.log(data);
+		        	if(data.code && data.code != 200){
+						Feng.error(data.message);
+					}else {
+						me.success(data);
+					}
 		        },
 		        error: function(data) {
 		        	me.error(data);
@@ -58,6 +63,9 @@
 		clear : function () {
 			this.data = {};
 			return this;
+		},
+		setType: function(type){
+			this.type = type;
 		}
 	};
 	

@@ -1,5 +1,6 @@
 package cn.enilu.guns.admin.modular.system.controller;
 
+import cn.enilu.guns.admin.core.base.tips.ErrorTip;
 import cn.enilu.guns.bean.annotion.core.BussinessLog;
 import cn.enilu.guns.bean.annotion.core.Permission;
 import cn.enilu.guns.bean.constant.Const;
@@ -9,6 +10,7 @@ import cn.enilu.guns.admin.core.base.controller.BaseController;
 import cn.enilu.guns.admin.core.base.tips.Tip;
 import cn.enilu.guns.admin.core.cache.CacheKit;
 import cn.enilu.guns.bean.exception.GunsException;
+import cn.enilu.guns.bean.vo.query.SearchFilter;
 import cn.enilu.guns.service.system.UserService;
 import cn.enilu.guns.utils.BeanUtil;
 import cn.enilu.guns.warpper.RoleWarpper;
@@ -16,8 +18,6 @@ import cn.enilu.guns.bean.vo.node.ZTreeNode;
 import cn.enilu.guns.bean.constant.cache.Cache;
 import cn.enilu.guns.bean.entity.system.Role;
 import cn.enilu.guns.bean.entity.system.User;
-import cn.enilu.guns.dao.system.RoleRepository;
-import cn.enilu.guns.dao.system.UserRepository;
 import cn.enilu.guns.service.system.LogObjectHolder;
 import cn.enilu.guns.service.system.RoleService;
 import cn.enilu.guns.service.system.impl.ConstantFactory;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -49,11 +48,6 @@ public class RoleController extends BaseController {
 
     private static String PREFIX = "/system/role";
 
-    @Resource
-    UserRepository userRepository;
-
-    @Resource
-    RoleRepository roleRepository;
     @Autowired
     private RoleService roleService;
     @Autowired
@@ -116,9 +110,9 @@ public class RoleController extends BaseController {
     public Object list(@RequestParam(required = false) String roleName) {
         List roles = null;
         if(Strings.isNullOrEmpty(roleName)) {
-            roles = (List) roleRepository.findAll();
+            roles = (List) roleService.queryAll();
         }else{
-            roles = roleRepository.findByName(roleName);
+            roles = roleService.findByName(roleName);
         }
         return super.warpObject(new RoleWarpper(BeanUtil.objectsToMaps(roles)));
     }
@@ -135,7 +129,7 @@ public class RoleController extends BaseController {
             throw new GunsException(BizExceptionEnum.REQUEST_NULL);
         }
         role.setId(null);
-        roleRepository.save(role);
+        roleService.insert(role);
         return SUCCESS_TIP;
     }
 
@@ -150,7 +144,7 @@ public class RoleController extends BaseController {
         if (result.hasErrors()) {
             throw new GunsException(BizExceptionEnum.REQUEST_NULL);
         }
-        this.roleRepository.save(role);
+        this.roleService.update(role);
 
         //删除缓存
         CacheKit.removeAll(Cache.CONSTANT);
@@ -170,8 +164,12 @@ public class RoleController extends BaseController {
         }
 
         //不能删除超级管理员角色
-        if(roleId.equals(Const.ADMIN_ROLE_ID)){
+        if(roleId.intValue() ==Const.ADMIN_ROLE_ID){
             throw new GunsException(BizExceptionEnum.CANT_DELETE_ADMIN);
+        }
+        List<User> userList = userService.queryAll(SearchFilter.build("roleid", SearchFilter.Operator.EQ,String.valueOf(roleId)));
+        if(!userList.isEmpty()){
+            return new ErrorTip(400,"有用户使用该角色，禁止删除");
         }
 
         //缓存被删除的角色名称
